@@ -26,7 +26,7 @@ function UserForm() {
         mobileNumber: '',
         emailId: '',
         dailyReport: false,
-        reportTime: new Date(),
+        reportTime: '',
     });
 
     const handleChange = (e) => {
@@ -36,13 +36,7 @@ function UserForm() {
             [name]: value
         });
     };
-
-    const handleTimeChange =(newValue)=> {
-        setFormData({
-           ...formData,
-            reportTime: newValue
-        });
-    };
+  
     const handleDateChange = (name, newValue) => {
         setFormData({
             ...formData,
@@ -63,8 +57,7 @@ function UserForm() {
         const submissionData = {
             ...formData,
             creationDate: formData.creationDate.toISOString().split('T')[0],
-            validity: formData.validity.toISOString().split('T')[0],
-            reportTime: formatTime(new Date(formData.reportTime))
+            validity: formData.validity.toISOString().split('T')[0],        
         };
         try {
             const response = await fetch('/saveUser', {
@@ -214,12 +207,25 @@ function UserForm() {
                         control={<Checkbox checked={formData.dailyReport} onChange={handleCheckboxChange} />}
                         label="Daily Report"
                     />
-                    <TimePicker
+                    <TextField
+                        id="reportTime"
                         label="Report Time"
+                        variant="outlined"
+                        sx={{ m: 1, width: '25ch' }}
+                         name="reportTime"
+                        type="time" // Set the type to "time"
+                        placeholder="HH:MM" // Placeholder text
                         value={formData.reportTime}
-                        onChange={(newValue) => handleTimeChange('reportTime', newValue)}
-                        renderInput={(params) => <TextField {...params} sx={{ m: 1, width: '25ch' }} />}
-                    />
+                         onChange={handleChange}
+                        InputLabelProps={{
+                         shrink: true, // Ensures the label doesn't overlap with the input value
+                          }}
+                        inputProps={{
+                         step: 300, // 5 minutes step (optional, customize as needed)
+                            }}
+/>
+
+                    
                     <br />
                     <Button type="submit" variant="contained" color="primary" sx={{ m: 1 }}>
                         Save User
