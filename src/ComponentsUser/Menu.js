@@ -4,13 +4,14 @@ function Menu(){
     const [idleTime, setIdleTime] = useState('');
     const [alarmTime, setAlarmTime] = useState('');
     const [shiftTiming, setShiftTiming] = useState('');
-
+    const [machineName, setMachineName] = useState('');
      // Function to handle saving settings
   const handleSubmit = () => {
     // Save idleTime, alarmTime, and shiftTiming to backend or local storage
     console.log('Saved idle time:', idleTime);
     console.log('Saved alarm time:', alarmTime);
     console.log('Saved shift timing:', shiftTiming);
+    console.log('saved machine name:', machineName);
     // You can add logic here to send data to your backend or save to local storage
   };
   return (
@@ -27,6 +28,15 @@ function Menu(){
       </thead>
       <tbody>
   <tr>
+  <td style={{ border: '1px solid black', padding: '6px', height: '20px', width: '200px' }}>
+  <input 
+    type="text" 
+    value={machineName} 
+    onChange={(e) => setMachineName(e.target.value)} 
+    placeholder="Enter machine name" 
+  />
+</td>
+
     <td style={{ border: '1px solid black', padding: '6px', height: '20px', width: '200px' }}>
       <div style={{ display: 'flex', alignItems: 'center' }}>
         <input 
@@ -56,7 +66,7 @@ function Menu(){
         style={{ height: '100%', width: '100%' }}
       >
         <option value="">Select Shift Timing</option>
-        <option value="6am to 2pm">6:00 AM  to 2:00 PM</option>
+        <option value="6am to 2PM">6:00 AM  to 2:00 PM</option>
         <option value="2pm to 10pm">2:00 PM to 10:00 PM</option>
         <option value="10pm to 6am">10:00 PM  to 6:00 PM</option>
       </select>
