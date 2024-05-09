@@ -3,14 +3,21 @@ import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import { Button } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
 
-
-export default function BasicTextFields() {
+export default function Admin() {
     const [userName, setuserName]=React.useState('');
     const [password, setpassword] = React.useState('');
     const navigate = useNavigate();
     const [message, setMessage] = React.useState(''); 
     const [error, setError] = React.useState('');
+   
+    
+    useEffect(()=>{
+      localStorage.setItem('isLoggedIn','false');
+      
+    })
+
     const handleClick = async (e) => {
         e.preventDefault();
         
@@ -20,6 +27,8 @@ export default function BasicTextFields() {
         headers:{"Content-Type": "application/json"},
         body: JSON.stringify(admin)
     });
+
+    
     if (response.ok) 
     {
       const message = await response.text();
@@ -28,7 +37,8 @@ export default function BasicTextFields() {
       displayMessage(message);
       setTimeout(() => {
         localStorage.setItem('isLoggedIn', 'true');
-      navigate('/admin/dashboard');  // Navigate to login after 3 seconds
+        
+        navigate('/dashboard');  // Navigate to login after 3 seconds
         }, 3000); // 3000 milliseconds = 3 seconds  
     } 
     else 
@@ -59,8 +69,8 @@ export default function BasicTextFields() {
     >
         <h1 style={{color:"inherit"}}>Admin Login</h1>
       <TextField id="outlined-basic" label="Username" variant="outlined" sx={{ m: 1, width: '25ch' }} value={userName} onChange={(e)=>setuserName(e.target.value)}/>
-      <TextField id="outlined-basic" label="Password" variant="outlined" sx={{ m: 1, width: '25ch' }} value={password} onChange={(e)=>setpassword(e.target.value)}/>
-      <Button variant="contained" onClick={handleClick}>Submit</Button>
+      <TextField id="outlined-basic" label="Password" variant="outlined" sx={{ m: 1, width: '25ch' }} value={password} onChange={(e)=>setpassword(e.target.value)}/>    
+      <Button variant="contained" onClick={handleClick}>Login</Button>     
       {message && <div style={{ color: "green", marginTop: "10px" }}>{message}</div>}
     </Box>
   );

@@ -1,5 +1,4 @@
 // UsersPage.js
-import { Margin } from '@mui/icons-material';
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Button from '@mui/material/Button';
@@ -9,6 +8,8 @@ import EditIcon from '@mui/icons-material/Edit';
 function Users() {
     const [users, setUsers] = useState([]);
     const navigate = useNavigate();
+    const [devicesCounts, setDevicesCounts] = useState({});
+    const [message, setMessage] = useState('');
     useEffect(() => {
         const fetchUsers = async () => {
             const response = await fetch("/getAllUsers"); // Adjust URL as needed
@@ -20,6 +21,7 @@ function Users() {
         fetchUsers();
     }, []);
 
+    
     const handleClick = async(e) =>{
         e.preventDefault();
         navigate("/addUser");
@@ -30,6 +32,19 @@ function Users() {
         navigate(`/editUser/${userName}`);
     };
 
+
+    const getDevices = async(userName) =>{
+
+        const response = await fetch(`/getUserDevices?userName=${userName}`, {
+            method:'GET'
+            }); // Adjust URL as needed
+        if(response.ok){
+            const data = await response.json();
+            return data.length;
+        }
+        return 0;
+    }
+
     const handleDelete = async (userName) => {
         // Send delete request to delete user by userName
         try {
@@ -39,7 +54,8 @@ function Users() {
             if (response.ok) {
                 // Update users state after deletion
                 setUsers(users.filter(user => user.userName !== userName));
-                alert('User deleted successfully!');
+                const message = await response.text();
+                alert(message);
             } else {
                 alert('Failed to delete user');
             }
@@ -48,11 +64,22 @@ function Users() {
             alert('An error occurred while deleting user');
         }
     };
+    useEffect(() => {
+        const fetchDevicesCounts = async () => {
+            const counts = {};
+            for (const user of users) {
+                const count = await getDevices(user.userName);
+                counts[user.userName] = count;
+            }
+            setDevicesCounts(counts);
+        };
+        fetchDevicesCounts();
+    }, [users]); // Trigger fetchDevicesCounts when users change
 
     
     return (
-        <div>
-            <h1>Users List</h1>
+        <div sx={{display:'flex', justifyContent:'center'}}>
+            <h1 >Users List</h1>
             <table style={{ width: '50%', borderCollapse: 'collapse', marginLeft:'25%' }}>
                 <thead>
                     <tr>
@@ -68,7 +95,7 @@ function Users() {
                             <td style={{ border: '1px solid black', padding: '8px' }}>{user.userName}</td>
                             <td style={{ border: '1px solid black', padding: '8px' }}>{user.password_Mon}</td>
                             <td style={{ border: '1px solid black', padding: '8px' }}>{user.password_Ana}</td>
-                            <td style={{ border: '1px solid black', padding: '8px' }}>10</td>                                                        
+                            <td style={{ border: '1px solid black', padding: '8px' }}>{devicesCounts[user.userName]}</td>                                                        
                             <Button variant="outlined" startIcon={<EditIcon />} onClick={() => handleEdit(user.userName)}>Edit</Button>
                             &nbsp;&nbsp;&nbsp;                        
                             <Button variant="outlined" startIcon={<DeleteIcon />} onClick={() => handleDelete(user.userName)}>Delete</Button>                                                                                                             
