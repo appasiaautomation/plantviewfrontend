@@ -3,15 +3,25 @@ import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import { Button } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+<<<<<<< HEAD
 import Appbar from './Appbar';
+=======
+import { useEffect } from 'react';
+>>>>>>> 8171e474437dd27e0cc7c97caf58f0d1d98a0a58
 
-
-export default function BasicTextFields() {
+export default function Admin() {
     const [userName, setuserName]=React.useState('');
     const [password, setpassword] = React.useState('');
     const navigate = useNavigate();
     const [message, setMessage] = React.useState(''); 
     const [error, setError] = React.useState('');
+   
+    
+    useEffect(()=>{
+      localStorage.setItem('isLoggedIn','false');
+      
+    })
+
     const handleClick = async (e) => {
         e.preventDefault();
         
@@ -21,6 +31,10 @@ export default function BasicTextFields() {
         headers:{"Content-Type": "application/json"},
         body: JSON.stringify(admin)
     });
+<<<<<<< HEAD
+=======
+
+>>>>>>> 8171e474437dd27e0cc7c97caf58f0d1d98a0a58
     
     if (response.ok) 
     {  
@@ -30,7 +44,8 @@ export default function BasicTextFields() {
       displayMessage(message);
       setTimeout(() => {
         localStorage.setItem('isLoggedIn', 'true');
-      navigate('/admin/dashboard');  // Navigate to login after 3 seconds
+        
+        navigate('/dashboard');  // Navigate to login after 3 seconds
         }, 3000); // 3000 milliseconds = 3 seconds  
     } 
     else 
@@ -67,6 +82,7 @@ export default function BasicTextFields() {
       noValidate
       autoComplete="off"     
     >
+<<<<<<< HEAD
         <h1 style={{color:"inherit"}}>Asia Automation admin Login</h1>
       <TextField id="outlined-basic" label="Username" variant="outlined" sx={{ m: 1, width: '40ch' }} value={userName} onChange={(e)=>setuserName(e.target.value)}/>
       <TextField
@@ -82,6 +98,12 @@ export default function BasicTextFields() {
       <Button variant="contained" sx={{ m: 1, width: '40ch' }}onClick={handleClick}>Login</Button>
       {error && <div style={{ color: "red", marginTop: "10px" }}>{error}</div>}
 
+=======
+        <h1 style={{color:"inherit"}}>Admin Login</h1>
+      <TextField id="outlined-basic" label="Username" variant="outlined" sx={{ m: 1, width: '25ch' }} value={userName} onChange={(e)=>setuserName(e.target.value)}/>
+      <TextField id="outlined-basic" label="Password" variant="outlined" sx={{ m: 1, width: '25ch' }} value={password} onChange={(e)=>setpassword(e.target.value)}/>    
+      <Button variant="contained" onClick={handleClick}>Login</Button>     
+>>>>>>> 8171e474437dd27e0cc7c97caf58f0d1d98a0a58
       {message && <div style={{ color: "green", marginTop: "10px" }}>{message}</div>}
       
     </Box>
