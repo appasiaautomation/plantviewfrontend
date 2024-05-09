@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import Checkbox from '@mui/material/Checkbox';
@@ -7,23 +8,27 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFnsV3';  // Correct import for the adapter
 import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
 
+function EditUser(){
 
-function UserForm() {
+    const location = useLocation();
+    const { user } = location.state || {}; // Access user data passed from the previous page
+    const navigate= useNavigate();
+
     const [formData, setFormData] = useState({
-        userName: '',
-        plantName: '',
-        location: '',
-        creationDate: new Date(),
-        validity: new Date(),
-        userName_Mon: '',
-        password_Mon: '',
-        userName_Ana: '',
-        password_Ana: '',
-        address: '',
-        mobileNumber: '',
-        emailId: '',
-        dailyReport: false,
-        reportTime: '',
+        userName: user.userName || '',
+        plantName: user.plantName || '',
+        location: user.location || '',
+        creationDate: user.creationDate ? new Date(user.creationDate) : new Date(),
+        validity: user.validity ? new Date(user.validity) : new Date(),
+        userName_Mon: user.userName_Mon || '',
+        password_Mon: user.password_Mon || '',
+        userName_Ana: user.userName_Ana || '',
+        password_Ana: user.password_Ana || '',
+        address: user.address || '',
+        mobileNumber: user.mobileNumber || '',
+        emailId: user.emailId || '',
+        dailyReport: user.dailyReport || false,
+        reportTime: user.reportTime || '',
     });
 
     const handleChange = (e) => {
@@ -57,8 +62,8 @@ function UserForm() {
             validity: formData.validity.toISOString().split('T')[0],        
         };
         try {
-            const response = await fetch('/admin/saveUser', {
-                method: 'POST',
+            const response = await fetch('/admin/updateUser', {
+                method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json'
                 },
@@ -67,6 +72,8 @@ function UserForm() {
             if (response.ok) {
                 const message = await response.text();
                 alert(message);
+                navigate(-1);
+                
                 // Optionally reset form fields after successful submission
                 // resetFormData();
             } else {
@@ -78,32 +85,22 @@ function UserForm() {
             alert('An error occurred while saving user');
         }
     };
-    
-    const validateMobileNumber = (value) => {
-        // Regular expression to match 10 digits only
-        const mobileNumberRegex = /^\d{10}$/;
-        return mobileNumberRegex.test(value);
-    };
-    
-     
-    const validateEmail = (value) => {
-        // Regular expression for email validation
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        return emailRegex.test(value);
-    };
+
     return (
         <LocalizationProvider dateAdapter={AdapterDateFns}>
             <div >
-                <h2>Create User</h2>
+                <h2>Update User</h2>
                 <form onSubmit={handleSubmit} >
                     <TextField
                         id="userName"
                         label="Username"
                         variant="outlined"
-                        sx={{ m: 1, width: '25ch' }}
+                        sx={{ m: 1, width: '25ch', pointerEvents: 'none' }}
                         name="userName"
                         value={formData.userName}
                         onChange={handleChange}
+                        disabled
+                        
                     />
                     <TextField
                         id="plantName"
@@ -190,16 +187,12 @@ function UserForm() {
                         id="mobileNumber"
                         label="Mobile Number"
                         variant="outlined"
-                        type="tel" 
+                        type="number"
                         sx={{ m: 1, width: '25ch' }}
                         name="mobileNumber"
                         value={formData.mobileNumber}
                         onChange={handleChange}
-                        inputProps={{ minLength: 10 , maxLength: 10}} // Specify the minimum length
-                        error={!validateMobileNumber(formData.mobileNumber)} // Check if mobile number is invalid
-                        helperText={!validateMobileNumber(formData.mobileNumber) ? 'Please enter a valid 10-digit mobile number' : ''}
                     />
-
                     <TextField
                         id="emailId"
                         label="Email ID"
@@ -208,12 +201,6 @@ function UserForm() {
                         name="emailId"
                         value={formData.emailId}
                         onChange={handleChange}
-                        inputProps={{
-                            maxLength: 50, // Specify the maximum length for the email
-                            pattern: '^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$', // Email validation pattern
-                        }}
-                        error={!validateEmail(formData.emailId)} // Check if email is invalid
-                        helperText={!validateEmail(formData.emailId) ? 'Enter a valid email address' : ''}
                     />
                     <br />
                     <FormControlLabel
@@ -236,9 +223,7 @@ function UserForm() {
                         inputProps={{
                          step: 300, // 5 minutes step (optional, customize as needed)
                             }}
-/>
-
-                    
+/>                  
                     <br />
                     <Button type="submit" variant="contained" color="primary" sx={{ m: 1 }}>
                         Save User
@@ -247,7 +232,6 @@ function UserForm() {
             </div>
         </LocalizationProvider>
     );
-    
 }
 
-export default UserForm;
+export default EditUser;   
