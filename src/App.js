@@ -28,7 +28,6 @@ function App() {
         <BrowserRouter>
         <Appbar/>
         <Routes>      
-        <Route path="/" element={<UserApp/>} />
         <Route path="/admin" element={<Admin />} />
         <Route path="/admin/dashboard" element={<Protected Component={Dashboard} />} />
         <Route path="/admin/Users" element={<Protected Component={Users }  />} /> 

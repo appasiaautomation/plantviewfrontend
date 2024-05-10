@@ -38,7 +38,7 @@ export default function Admin() {
       setTimeout(() => {
         localStorage.setItem('isLoggedIn', 'true');
         
-        navigate('/dashboard');  // Navigate to login after 3 seconds
+        navigate('/admin/dashboard');  // Navigate to login after 3 seconds
         }, 3000); // 3000 milliseconds = 3 seconds  
     } 
     else 
