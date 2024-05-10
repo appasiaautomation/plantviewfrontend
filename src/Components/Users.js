@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 import { Margin } from '@mui/icons-material';
-=======
-// UsersPage.js
->>>>>>> 8171e474437dd27e0cc7c97caf58f0d1d98a0a58
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Button from '@mui/material/Button';
@@ -13,12 +9,8 @@ function Users() {
     const [users, setUsers] = useState([]);
     const navigate = useNavigate();
     const [devicesCounts, setDevicesCounts] = useState({});
-<<<<<<< HEAD
     const [devicesList, setDevicesList] = useState([]);
 
-=======
-    const [message, setMessage] = useState('');
->>>>>>> 8171e474437dd27e0cc7c97caf58f0d1d98a0a58
     useEffect(() => {
         const fetchUsers = async () => {
             const response = await fetch("/admin/getAllUsers"); // Adjust URL as needed
@@ -29,14 +21,8 @@ function Users() {
         };
         fetchUsers();
     }, []);
-<<<<<<< HEAD
         
     const handleClick = async (e) => {
-=======
-
-    
-    const handleClick = async(e) =>{
->>>>>>> 8171e474437dd27e0cc7c97caf58f0d1d98a0a58
         e.preventDefault();
         navigate("/admin/addUser");
     };
@@ -47,16 +33,7 @@ function Users() {
     };
     
 
-    const getDevices = async (userName) => {
-        const response = await fetch(`/admin/getUserDevices?userName=${userName}`, {
-            method: 'GET'
-        }); // Adjust URL as needed
-        if (response.ok) {
-            const data = await response.json();
-            return data.length;
-        }
-        return 0;
-    };
+
 
 
     const getDevices = async(userName) =>{
@@ -87,10 +64,6 @@ function Users() {
                 // Update users state after deletion
                 const message= await response.text();
                 setUsers(users.filter(user => user.userName !== userName));
-<<<<<<< HEAD
-=======
-                const message = await response.text();
->>>>>>> 8171e474437dd27e0cc7c97caf58f0d1d98a0a58
                 alert(message);
             } else {
                 const error = await response.text();             
@@ -101,21 +74,6 @@ function Users() {
             alert('An error occurred while deleting user');
         }
     };
-<<<<<<< HEAD
-=======
-    useEffect(() => {
-        const fetchDevicesCounts = async () => {
-            const counts = {};
-            for (const user of users) {
-                const count = await getDevices(user.userName);
-                counts[user.userName] = count;
-            }
-            setDevicesCounts(counts);
-        };
-        fetchDevicesCounts();
-    }, [users]); // Trigger fetchDevicesCounts when users change
-
->>>>>>> 8171e474437dd27e0cc7c97caf58f0d1d98a0a58
     
            
     useEffect(() => {
@@ -142,15 +100,9 @@ function Users() {
     
 
     return (
-<<<<<<< HEAD
         <div>
             <h1>Users List</h1>
             <table style={{ width: '80%', borderCollapse: 'collapse', marginLeft: '12%'  }}>
-=======
-        <div sx={{display:'flex', justifyContent:'center'}}>
-            <h1 >Users List</h1>
-            <table style={{ width: '50%', borderCollapse: 'collapse', marginLeft:'25%' }}>
->>>>>>> 8171e474437dd27e0cc7c97caf58f0d1d98a0a58
                 <thead>
                     <tr>
                         <th style={{ border: '1px solid black', padding: '8px', textAlign: 'center' }}>Username</th>
@@ -166,7 +118,6 @@ function Users() {
                             <td style={{ border: '1px solid black', padding: '8px' }}>{user.userName}</td>
                             <td style={{ border: '1px solid black', padding: '8px' }}>{user.password_Mon}</td>
                             <td style={{ border: '1px solid black', padding: '8px' }}>{user.password_Ana}</td>
-<<<<<<< HEAD
                             <td
                                 style={{ border: '1px solid black', padding: '8px', cursor: 'pointer' }}
                                 onClick={() => handleDevicesClick(user.userName)}
@@ -177,12 +128,6 @@ function Users() {
                             <Button variant="outlined" startIcon={<EditIcon />} onClick={() => handleEdit(user.userName, user)}>Edit</Button>
                             &nbsp;&nbsp;&nbsp;
                             <Button variant="outlined" startIcon={<DeleteIcon />} onClick={() => handleDelete(user.userName)}>Delete</Button>
-=======
-                            <td style={{ border: '1px solid black', padding: '8px' }}>{devicesCounts[user.userName]}</td>                                                        
-                            <Button variant="outlined" startIcon={<EditIcon />} onClick={() => handleEdit(user.userName)}>Edit</Button>
-                            &nbsp;&nbsp;&nbsp;                        
-                            <Button variant="outlined" startIcon={<DeleteIcon />} onClick={() => handleDelete(user.userName)}>Delete</Button>                                                                                                             
->>>>>>> 8171e474437dd27e0cc7c97caf58f0d1d98a0a58
                         </tr>
                     ))}
                 </tbody>
