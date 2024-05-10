@@ -4,7 +4,6 @@ import { useNavigate } from 'react-router-dom';
 import Button from '@mui/material/Button';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
-import ConfirmationModal from "./Components/ConfirmationModal"
 
 function Devices() {
     const [devices, setDevices] = useState([]);
