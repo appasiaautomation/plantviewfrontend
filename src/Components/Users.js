@@ -1,4 +1,4 @@
-import { Margin } from '@mui/icons-material';
+
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Button from '@mui/material/Button';
@@ -9,7 +9,7 @@ function Users() {
     const [users, setUsers] = useState([]);
     const navigate = useNavigate();
     const [devicesCounts, setDevicesCounts] = useState({});
-    const [devicesList, setDevicesList] = useState([]);
+ 
 
     useEffect(() => {
         const fetchUsers = async () => {
@@ -33,12 +33,9 @@ function Users() {
     };
     
 
-
-
-
     const getDevices = async(userName) =>{
 
-        const response = await fetch(`/getUserDevices?userName=${userName}`, {
+        const response = await fetch(`/admin/getUserDevices?userName=${userName}`, {
             method:'GET'
             }); // Adjust URL as needed
         if(response.ok){
@@ -100,10 +97,11 @@ function Users() {
     
 
     return (
-        <div>
+        <div sx={{ display: 'flex', justifyContent: 'center'}} style={{marginTop:'50px'}}>
             <h1>Users List</h1>
-            <table style={{ width: '80%', borderCollapse: 'collapse', marginLeft: '12%'  }}>
+            <table style={{ width: '80%', borderCollapse: 'collapse', marginLeft: '12%', marginTop:'40px'  }}>
                 <thead>
+                <Button variant="contained" onClick={handleClick} style={{marginBottom:'30px'}}>Add New User</Button>
                     <tr>
                         <th style={{ border: '1px solid black', padding: '8px', textAlign: 'center' }}>Username</th>
                         <th style={{ border: '1px solid black', padding: '8px', textAlign: 'center' }}>Monitoring Password</th>
@@ -122,7 +120,7 @@ function Users() {
                                 style={{ border: '1px solid black', padding: '8px', cursor: 'pointer' }}
                                 onClick={() => handleDevicesClick(user.userName)}
                             >
-                                {devicesCounts[user.userName]}
+                                {devicesCounts[user.userName] }
                             </td>
                             <td style={{ border: '1px solid black', padding: '8px' }}>{user.validity}</td>
                             <Button variant="outlined" startIcon={<EditIcon />} onClick={() => handleEdit(user.userName, user)}>Edit</Button>
@@ -133,7 +131,7 @@ function Users() {
                 </tbody>
             </table>
             <br />
-            <Button variant="contained" onClick={handleClick}>Add New User</Button>
+            
 
            
             

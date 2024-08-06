@@ -3,7 +3,6 @@ import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import { Button } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import Appbar from './Appbar';
 import { useEffect } from 'react';
 
 export default function Admin() {
@@ -17,7 +16,7 @@ export default function Admin() {
     useEffect(()=>{
       localStorage.setItem('isLoggedIn','false');
       
-    })
+    },[])
 
     const handleClick = async (e) => {
         e.preventDefault();
@@ -36,8 +35,7 @@ export default function Admin() {
       // Use navigate function to redirect   
       displayMessage(message);
       setTimeout(() => {
-        localStorage.setItem('isLoggedIn', 'true');
-        
+        localStorage.setItem('isLoggedIn', 'true');     
         navigate('/admin/dashboard');  // Navigate to login after 3 seconds
         }, 3000); // 3000 milliseconds = 3 seconds  
     } 
@@ -75,7 +73,7 @@ export default function Admin() {
       noValidate
       autoComplete="off"     
     >
-        <h1 style={{color:"inherit"}}>Asia Automation admin Login</h1>
+        <h1>Asia Automation admin Login</h1>
       <TextField id="outlined-basic" label="Username" variant="outlined" sx={{ m: 1, width: '40ch' }} value={userName} onChange={(e)=>setuserName(e.target.value)}/>
       <TextField
       
