@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from "react";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
-
+import LinearProgress from "@mui/material/LinearProgress";
 import HourlyData from "./HourlyData";
+import CircularProgress from "@mui/material/CircularProgress";
+import Box from "@mui/material/Box";
 
 const Historic = ({ closeModal, shifts, machineName, deviceId }) => {
   const [formData, setFormData] = useState({
@@ -18,6 +20,7 @@ const Historic = ({ closeModal, shifts, machineName, deviceId }) => {
   const [selectedMachineBreakDown, setSelectedMachineBreakDown] = useState([]);
   const [selectedSetupMode, setSelectedSetupMode] = useState([]);
   const [selectedJobs, setSelectedJobs] = useState([]);
+  const [loading, setLoading] = useState(false); // State for progress bar
 
   useEffect(() => {
     setLocalShifts(shifts);
@@ -78,7 +81,7 @@ const Historic = ({ closeModal, shifts, machineName, deviceId }) => {
       return;
     }
     const result = [];
-
+    setLoading(true); // Show progress bar
     for (
       let d = new Date(startDate);
       d <= endDate;
@@ -156,6 +159,7 @@ const Historic = ({ closeModal, shifts, machineName, deviceId }) => {
     }
     setDisplayData(result);
     setShowData(true);
+    setLoading(false); // Hide progress bar
   };
 
   const handleHourlyClick = (
@@ -188,6 +192,7 @@ const Historic = ({ closeModal, shifts, machineName, deviceId }) => {
           className="modal-container bg-white w-full md:max-h:4xl md:max-w-4xl mx-auto rounded shadow-lg z-50 overflow-y-auto"
           onClick={(e) => e.stopPropagation()}
         >
+          {loading && <LinearProgress />} {/* Progress bar */}
           <div className="modal-content py-4 text-left px-6 relative">
             <button
               className="close absolute top-0 right-0 mt-2 mr-4 cursor-pointer text-black text-2xl hover:text-gray-700"
@@ -201,7 +206,6 @@ const Historic = ({ closeModal, shifts, machineName, deviceId }) => {
             <p>
               Machine Name: <b>{machineName}</b>
             </p>
-
             <form onSubmit={handleSubmit}>
               <div className="flex items-center justify-center">
                 <TextField
@@ -246,6 +250,16 @@ const Historic = ({ closeModal, shifts, machineName, deviceId }) => {
               </div>
             </form>
 
+            {loading && (
+              <div>
+                <div className="flex justify-center">
+                  <Box sx={{ display: "flex" }}>
+                    <CircularProgress />
+                  </Box>
+                </div>
+                <div className="flex justify-center">Please wait...</div>
+              </div>
+            )}
             {showData && (
               <div className="mt-4">
                 <div className="table-container overflow-y-auto max-h-60">

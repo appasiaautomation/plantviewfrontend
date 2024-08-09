@@ -5,6 +5,7 @@ import MachineModal from "./MachineModal";
 import EditShiftModal from "./EditShiftModal";
 import MachineList from "./MachineList";
 import Dashboard from "./Dashboard";
+import LinearProgress from "@mui/material/LinearProgress";
 
 const sampleData = {
   plantName: "Sample",
@@ -35,6 +36,7 @@ const UserApp = () => {
   const [deviceIds, setDeviceIds] = useState([]);
   const [latestStatus, setLatestStatus] = useState([]);
   const [lastUpdated, setLastUpdated] = useState("");
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const fetchDevicesAndShifts = async () => {
@@ -83,7 +85,6 @@ const UserApp = () => {
           }
           return currentHour >= startHour && currentHour <= endHour;
         });
-        console.table(matchingShift);
         if (matchingShift) {
           //console.log(convertTimeToISO(matchingShift.shiftStart))
           setShiftStart(convertTimeToISO(matchingShift.shiftStart, false));
@@ -121,6 +122,7 @@ const UserApp = () => {
   useEffect(() => {
     if (deviceIds.length > 0 && shiftStart && shiftEnd) {
       const fetchAllLatest = async () => {
+        setLoading(true);
         const latestData = [];
         let machinesRunning = 0;
         let machinesIdle = 0;
@@ -165,6 +167,7 @@ const UserApp = () => {
           machinesWithError,
         }));
         setLastUpdated(new Date().toLocaleTimeString());
+        setLoading(false);
       };
 
       const interval = setInterval(fetchAllLatest, 10000);
@@ -391,83 +394,87 @@ const UserApp = () => {
   };
 
   return (
-    <div className="App bg-gray-200 min-h-screen p-8">
-      <div className="flex justify-between items-center">
-        <h1 className="text-3xl text-gray-800 flex-grow text-center">
-          {data.plantName}
-        </h1>
-      </div>
-      <div className="flex justify-start mb-4">
-        <p className="text-black-600 font-bold">
-          Last Updated : {new Date().toLocaleDateString("en-GB")} {lastUpdated}
-        </p>
-      </div>
-      <div className="color-options mt-2 flex justify-center space-x-4 ">
-        <div className="flex items-center space-x-2">
-          <span className="font-semibold"> Running</span>
-          <div className="bg-green-500 w-8 h-8 cursor-pointer border border-black"></div>
+    <div>
+      {loading && <LinearProgress />}
+      <div className="App bg-gray-200 min-h-screen p-8">
+        <div className="flex justify-between items-center">
+          <h1 className="text-3xl text-gray-800 flex-grow text-center">
+            {data.plantName}
+          </h1>
         </div>
-        <div className="flex items-center space-x-2">
-          <span className="font-semibold"> Idle</span>
-          <div className="bg-yellow-500 w-8 h-8 cursor-pointer border border-black"></div>
+        <div className="flex justify-start mb-4">
+          <p className="text-black-600 font-bold">
+            Last Updated : {new Date().toLocaleDateString("en-GB")}{" "}
+            {lastUpdated}
+          </p>
         </div>
-        <div className="flex items-center space-x-2">
-          <span className="font-semibold"> Alarm</span>
-          <div className="bg-red-950 w-8 h-8 cursor-pointer border border-black"></div>
+        <div className="color-options mt-2 flex justify-center space-x-4 ">
+          <div className="flex items-center space-x-2">
+            <span className="font-semibold"> Running</span>
+            <div className="bg-green-500 w-8 h-8 cursor-pointer border border-black"></div>
+          </div>
+          <div className="flex items-center space-x-2">
+            <span className="font-semibold"> Idle</span>
+            <div className="bg-yellow-500 w-8 h-8 cursor-pointer border border-black"></div>
+          </div>
+          <div className="flex items-center space-x-2">
+            <span className="font-semibold"> Alarm</span>
+            <div className="bg-red-950 w-8 h-8 cursor-pointer border border-black"></div>
+          </div>
+          <div className="flex items-center space-x-2">
+            <span className="font-semibold"> Comm. error</span>
+            <div className="bg-gray-500 w-8 h-8 cursor-pointer border border-black"></div>
+          </div>
         </div>
-        <div className="flex items-center space-x-2">
-          <span className="font-semibold"> Comm. error</span>
-          <div className="bg-gray-500 w-8 h-8 cursor-pointer border border-black"></div>
+        <div className="button-container flex justify-end space-x-2">
+          <button
+            className="bg-red-500 text-center text-sm hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+            onClick={handleIdleAlarm}
+          >
+            Alarm/Idle Time
+          </button>
+          <button
+            className="bg-blue-500 text-center text-sm hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+            onClick={handleEditShiftTime}
+          >
+            Edit Shift Time
+          </button>
         </div>
-      </div>
-      <div className="button-container flex justify-end space-x-2">
-        <button
-          className="bg-red-500 text-center text-sm hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
-          onClick={handleIdleAlarm}
-        >
-          Alarm/Idle Time
-        </button>
-        <button
-          className="bg-blue-500 text-center text-sm hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-          onClick={handleEditShiftTime}
-        >
-          Edit Shift Time
-        </button>
-      </div>
-      <Dashboard
-        data={data}
-        selectedShift={selectedShift}
-        onIdleAlarm={handleIdleAlarm}
-        onEditShiftTime={handleEditShiftTime}
-      />
-      <MachineList
-        machines={data.machineInfo}
-        Status={latestStatus}
-        onMachineClick={handleMachineClick}
-      />
+        <Dashboard
+          data={data}
+          selectedShift={selectedShift}
+          onIdleAlarm={handleIdleAlarm}
+          onEditShiftTime={handleEditShiftTime}
+        />
+        <MachineList
+          machines={data.machineInfo}
+          Status={latestStatus}
+          onMachineClick={handleMachineClick}
+        />
 
-      {selectedMachine && (
-        <MachineModal
-          machine={selectedMachine}
-          closeModal={() => setSelectedMachine(null)}
-          shiftIntervals={shiftIntervals}
-          shiftStart={shiftStart}
-          shiftEnd={shiftEnd}
-          latestStatus={latestStatus.find(
-            (status) => status.deviceId === selectedMachine.deviceId
-          )}
-          deviceId={selectedMachine.deviceId}
-          shifts={shifts}
-        />
-      )}
-      {showEditShiftModal && (
-        <EditShiftModal
-          shifts={data.shiftTimes}
-          saveShifts={saveShifts}
-          closeModal={closeEditShiftModal}
-          deleteShift={deleteShift}
-        />
-      )}
+        {selectedMachine && (
+          <MachineModal
+            machine={selectedMachine}
+            closeModal={() => setSelectedMachine(null)}
+            shiftIntervals={shiftIntervals}
+            shiftStart={shiftStart}
+            shiftEnd={shiftEnd}
+            latestStatus={latestStatus.find(
+              (status) => status.deviceId === selectedMachine.deviceId
+            )}
+            deviceId={selectedMachine.deviceId}
+            shifts={shifts}
+          />
+        )}
+        {showEditShiftModal && (
+          <EditShiftModal
+            shifts={data.shiftTimes}
+            saveShifts={saveShifts}
+            closeModal={closeEditShiftModal}
+            deleteShift={deleteShift}
+          />
+        )}
+      </div>
     </div>
   );
 };
