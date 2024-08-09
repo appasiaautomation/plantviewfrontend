@@ -22,7 +22,7 @@ function AddDevices() {
     const handleCheckboxChange = (event) => {
         setFormData({
             ...formData,
-            status: event.target.checked,
+            Status: event.target.checked,
         });
     };
 
@@ -162,7 +162,7 @@ function AddDevices() {
                 />
                 <br />
                 <FormControlLabel
-                    control={<Checkbox checked={formData.status} onChange={handleCheckboxChange} />}
+                    control={<Checkbox checked={formData.Status} onChange={handleCheckboxChange} />}
                     label="Status"
                 />
                 <br />

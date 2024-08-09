@@ -151,7 +151,6 @@ const MachineModal = ({
           <h2 className="text-lg font-semibold mb-4">Machine Details</h2>
           <p>Machine Name: {machine.machineName}</p>
           <p>Device ID: {machine.deviceId}</p>
-          <p>Location: {machine.machineLocation}</p>
           <p>Number of Jobs: {latestStatus.jobs}</p>
           <p>
             Current Status:{" "}
