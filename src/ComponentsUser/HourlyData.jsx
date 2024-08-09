@@ -1,6 +1,4 @@
 import React, { useState, useEffect } from "react";
-import TextField from "@mui/material/TextField";
-import Button from "@mui/material/Button";
 import "./generateHourly";
 
 // Utility function to generate hourly intervals
@@ -10,12 +8,12 @@ const generateHourlyIntervals = (start, end) => {
   const endHour = parseInt(end.split(":")[0]);
   const startHourMinutes = parseInt(start.split(":")[1]);
   const endHourMinutes = parseInt(end.split(":")[1]);
-  const currentHour = new Date().getHours();
 
   if (start <= end) {
+    console.log();
     // Shift within the same day
-
-    for (let hour = startHour; hour < endHour && hour <= currentHour; hour++) {
+    for (let hour = startHour; hour < endHour; hour++) {
+      //console.log("looping same DAy");
       if (hour + 1 >= endHour) {
         if (startHourMinutes >= endHourMinutes) {
           intervals.push(
@@ -40,6 +38,7 @@ const generateHourlyIntervals = (start, end) => {
     // Shift spans overnight
     let zero = 0;
     for (let hour = startHour; hour < 24; hour++) {
+      //console.log("looping next day");
       if (endHour == zero && hour == 23) {
         intervals.push(
           `${hour}:${startHourMinutes} - ${zero}:${endHourMinutes}`
@@ -100,14 +99,6 @@ const parseDuration = (duration) => {
   return hours * 60 + minutes + seconds / 60;
 };
 
-const getCurrentDateFormatted = () => {
-  const date = new Date();
-  const year = date.getFullYear();
-  const month = (date.getMonth() + 1).toString().padStart(2, "0");
-  const day = date.getDate().toString().padStart(2, "0");
-  return `${year}-${month}-${day}`;
-};
-
 const HourlyData = ({
   shift,
   closeHourlyModal,
@@ -137,7 +128,15 @@ const HourlyData = ({
       NoOperator: parseDuration(noOperator[index]),
     }));
     setHourlyData(hourlyData1);
-  }, [shift.shiftStart, shift.shiftEnd]);
+    //console.table(hourlyData1);
+  }, [
+    shift.shiftStart,
+    shift.shiftEnd,
+    jobs,
+    machineBreakDown,
+    noOperator,
+    setup,
+  ]);
 
   return (
     <div className="modal fixed w-full h-full top-0 left-0 flex items-center justify-center z-50">

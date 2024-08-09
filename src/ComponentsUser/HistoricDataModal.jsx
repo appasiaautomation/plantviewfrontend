@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from "react";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
+import LinearProgress from "@mui/material/LinearProgress";
+import CircularProgress from "@mui/material/CircularProgress";
+import Box from "@mui/material/Box";
 
 import HourlyData from "./HourlyData";
 
@@ -18,6 +21,7 @@ const Historic = ({ closeModal, shifts, machineName, deviceId }) => {
   const [selectedMachineBreakDown, setSelectedMachineBreakDown] = useState([]);
   const [selectedSetupMode, setSelectedSetupMode] = useState([]);
   const [selectedJobs, setSelectedJobs] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     setLocalShifts(shifts);
@@ -25,9 +29,10 @@ const Historic = ({ closeModal, shifts, machineName, deviceId }) => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
+    setFormData((prevFormData) => {
+      const newFormData = { ...prevFormData, [name]: value };
+      validateDateRange(newFormData);
+      return newFormData;
     });
   };
 
@@ -67,9 +72,33 @@ const Historic = ({ closeModal, shifts, machineName, deviceId }) => {
     return date.toLocaleTimeString("en-GB", { hour12: false });
   };
 
+  const validateDateRange = ({ startDate, endDate }) => {
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    const maxDate = new Date(start);
+    maxDate.setMonth(maxDate.getMonth() + 1);
+
+    if (end > maxDate) {
+      alert("The date range cannot exceed one month.");
+      setFormData((prevFormData) => ({
+        ...prevFormData,
+        [endDate ? "endDate" : "startDate"]:
+          prevFormData[endDate ? "startDate" : "endDate"],
+      }));
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const start = new Date(formData.startDate);
+    const end = new Date(formData.endDate);
+    const maxDate = new Date(start);
+    maxDate.setMonth(maxDate.getMonth() + 1);
 
+    if (end > maxDate) {
+      alert("The date range cannot exceed one month.");
+      return;
+    }
     const startDate = new Date(formData.startDate);
     const endDate = new Date(formData.endDate);
     const curreDate = new Date(); // This creates a Date object representing the current date and time
@@ -77,6 +106,8 @@ const Historic = ({ closeModal, shifts, machineName, deviceId }) => {
       alert("Invalid Date Selection");
       return;
     }
+
+    setLoading(true);
     const result = [];
 
     for (
@@ -84,7 +115,9 @@ const Historic = ({ closeModal, shifts, machineName, deviceId }) => {
       d <= endDate;
       d.setDate(d.getDate() + 1)
     ) {
-      const dateStr = d.toISOString().split("T")[0];
+      let dateStrStart = d.toISOString().split("T")[0];
+      let dateStrEnd = d.toISOString().split("T")[0];
+
       for (let shift of localShifts) {
         if (d.getDate() == new Date(curreDate).getDate()) {
           const date = new Date();
@@ -95,8 +128,15 @@ const Historic = ({ closeModal, shifts, machineName, deviceId }) => {
             break;
           }
         }
-        const shiftStart = formatShiftTime(dateStr, shift.shiftStart);
-        const shiftEnd = formatShiftTime(dateStr, shift.shiftEnd);
+        if (shift.shiftStart > shift.shiftEnd) {
+          let newDate = new Date(d);
+          newDate.setDate(d.getDate() + 1);
+          dateStrEnd = newDate.toISOString().split("T")[0];
+        }
+        const shiftStart = formatShiftTime(dateStrStart, shift.shiftStart);
+        const shiftEnd = formatShiftTime(dateStrEnd, shift.shiftEnd);
+        console.log("date start= ", dateStrStart);
+        console.log("date end =", dateStrEnd);
         let shiftEndToUse = shiftEnd;
         const currentTimeFormatted = getCurrentDateTimeFormatted();
         if (
@@ -110,12 +150,15 @@ const Historic = ({ closeModal, shifts, machineName, deviceId }) => {
           };
         }
         try {
+          console.log(
+            `/user/device/${deviceId}?shiftStart=${shiftStart}&shiftEnd=${shiftEndToUse}`
+          );
           const response = await fetch(
             `/user/device/${deviceId}?shiftStart=${shiftStart}&shiftEnd=${shiftEndToUse}`
           );
           const data = await response.json();
           result.push({
-            date: dateStr,
+            date: dateStrStart,
             shiftName: shift.shiftName,
             Production: data.hourlyJobs.reduce(
               (partialSum, a) => partialSum + a,
@@ -156,6 +199,7 @@ const Historic = ({ closeModal, shifts, machineName, deviceId }) => {
     }
     setDisplayData(result);
     setShowData(true);
+    setLoading(false);
   };
 
   const handleHourlyClick = (
@@ -188,6 +232,7 @@ const Historic = ({ closeModal, shifts, machineName, deviceId }) => {
           className="modal-container bg-white w-full md:max-h:4xl md:max-w-4xl mx-auto rounded shadow-lg z-50 overflow-y-auto"
           onClick={(e) => e.stopPropagation()}
         >
+          {loading && <LinearProgress />} {/* Progress bar */}
           <div className="modal-content py-4 text-left px-6 relative">
             <button
               className="close absolute top-0 right-0 mt-2 mr-4 cursor-pointer text-black text-2xl hover:text-gray-700"
@@ -201,7 +246,6 @@ const Historic = ({ closeModal, shifts, machineName, deviceId }) => {
             <p>
               Machine Name: <b>{machineName}</b>
             </p>
-
             <form onSubmit={handleSubmit}>
               <div className="flex items-center justify-center">
                 <TextField
@@ -245,7 +289,14 @@ const Historic = ({ closeModal, shifts, machineName, deviceId }) => {
                 )}
               </div>
             </form>
-
+            {loading && (
+              <div>
+                <Box sx={{ display: "flex", justifyContent: "center" }}>
+                  <CircularProgress />
+                </Box>
+                <div className="flex justify-center">Please wait ...</div>
+              </div>
+            )}
             {showData && (
               <div className="mt-4">
                 <div className="table-container overflow-y-auto max-h-60">
