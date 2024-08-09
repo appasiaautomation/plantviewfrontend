@@ -37,6 +37,14 @@ function UserForm()
     });
   };
 
+  const handleChange = (event) => {
+    setFormData({
+        ...formData,
+        [event.target.name]: event.target.value,
+    });
+  };
+
+
  
   
     const handleDateChange = (name, newValue) => {
